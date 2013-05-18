@@ -123,6 +123,16 @@ module Net ; module Denon
       end
     end
 
+    def master_volume_up!
+      send_command MASTER_VOLUME_UP
+      send_command MASTER_VOLUME_STATUS
+    end
+
+    def master_volume_down!
+      send_command MASTER_VOLUME_DOWN
+      send_command MASTER_VOLUME_STATUS
+    end
+
     def input_source(source)
       case source
       when :phono
@@ -161,6 +171,8 @@ module Net ; module Denon
         send_command INPUT_SOURCE_NAPSTER
       when :server
         send_command INPUT_SOURCE_SERVER
+      when :mplayer
+        send_command INPUT_SOURCE_MPLAYER
       else
         raise ArgumentError.new("input source not recognized: #{source}")
       end

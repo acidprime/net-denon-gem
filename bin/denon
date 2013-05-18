@@ -45,6 +45,10 @@ loop do
   when /vol(ume)*\s+\d+/
     vol = cmd.match(/vol[ume]*\s+(\d+)/)[1]
     denon.master_volume = vol
+  when /vol(ume)*\s+down/
+    denon.master_volume_down!
+  when /vol(ume)*\s+up/
+    denon.master_volume_up!
   when /so(u|ur|urc|urce)*\s+([a-z_]+)/
     source = cmd.match(/.*\s+([a-z_]+)/)[1].to_sym
     denon.input_source(source)
