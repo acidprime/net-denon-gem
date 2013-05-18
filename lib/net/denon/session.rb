@@ -92,6 +92,9 @@ module Net ; module Denon
       send_command MUTE_STATUS
       send_command MASTER_VOLUME_STATUS
       send_command INPUT_SOURCE_STATUS
+      send_command MULTEQ_STATUS
+      send_command DYNVOL_STATUS
+      send_command DYNEQ_STATUS
     end
     
     def on!
@@ -177,7 +180,50 @@ module Net ; module Denon
         raise ArgumentError.new("input source not recognized: #{source}")
       end
     end
-    
+
+    def multeq(eq)
+      case eq
+      when :audyssey
+        send_command MULTEQ_AUDYSSEY
+      when :byplr
+        send_command MULTEQ_BYP_LR
+      when :flat
+        send_command MULTEQ_FLAT
+      when :manual
+        send_command MULTEQ_MANUAL
+      when :off
+        send_command MULTEQ_OFF
+      else
+        raise ArgumentError.new("MultiEQ mode not recognized: #{eq}")
+      end
+    end
+
+    def dyneq_on!
+      send_command DYNEQ_ON
+      send_command DYNEQ_STATUS
+    end
+
+    def dyneq_off!
+      send_command DYNEQ_OFF
+      send_command DYNEQ_STATUS
+    end
+
+    def dynvol(dvol)
+      case dvol
+      when :heavy
+        send_command DYNVOL_HEAVY
+      when :medium
+        send_command DYNVOL_MEDIUM
+      when :light
+        send_command DYNVOL_LIGHT
+      when :off
+        send_command DYNVOL_OFF
+      else
+        raise ArgumentError.new("Dynamic volume mode not recognized: #{dvol}")
+      end
+      send_command DYNVOL_STATUS
+    end
+
     def send_command(command)
       debug { "send_command called: #{command}" }
       transport.send command

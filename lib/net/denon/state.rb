@@ -16,6 +16,12 @@ module Net ; module Denon
     attr_reader :channel_volume
     
     attr_reader :record_source
+
+    attr_reader :dynvol
+  
+    attr_reader :dyneq
+  
+    attr_reader :multeq
   
     def initialize
       @channel_volume = Hash.new
@@ -58,6 +64,12 @@ module Net ; module Denon
           update_main_zone(r)
         when RECORD_SOURCE
           update_record_source(r)
+        when DYNVOL
+          update_dynvol(r)
+        when DYNEQ
+          update_dyneq(r)
+        when MULTEQ
+          update_multeq(r)
         end
       end
     end
@@ -75,6 +87,35 @@ module Net ; module Denon
       else
         @master_volume_max = p[-2..-1].to_i
       end
+    end
+
+    def update_dynvol(r)
+      dv = parameter(r)
+      case (dv)
+      when "HEV"
+         @dynvol = :heavy
+      when "MED"
+         @dynvol = :medium
+      when "LIT"
+         @dynvol = :light
+      when "OFF"
+         @dynvol = :off
+      end
+    end
+
+    def update_dyneq(r)
+      deq = parameter(r)
+      case (deq)
+      when "ON"
+         @dyneq = :on
+      when "OFF"
+         @dyneq = :off
+      end
+    end
+
+    def update_multeq(r)
+      meq = parameter(r)
+      @multeq = meq.downcase()
     end
 
     def update_channel_volume(r)
@@ -120,11 +161,23 @@ module Net ; module Denon
     end
   
     def command(r)
-      r[0, 2]
+      if r[0, 2] != "PS"
+         r[0, 2]
+      elsif r.count(":") > 0
+         r.split(":")[0]
+      else
+         r.split()[0]
+      end
     end
 
     def parameter(r)
-      r[2, r.length-3]
+      if r[0, 2] != "PS"
+         r[2, r.length-3]
+      elsif r.count(":") > 0
+         r.split(":")[1]
+      else
+         r.split()[1]
+      end
     end
 
     def to_s
@@ -132,10 +185,13 @@ module Net ; module Denon
      string += "standby: #{@standby}\n" 
      string += "mute: #{@mute}\n"
      string += "master volume: #{@master_volume}\n"
-     string += "master max volume: #{@master_max_volume}\n"
+     #string += "master max volume: #{@master_max_volume}\n"
      string += "input source: #{@input_source}\n"
-     string += "main zone: #{@main_zone}\n"
-     string += "record source: #{record_source}\n"
+     string += "multi-eq: #{@multeq}\n"
+     string += "dynamic volume: #{@dynvol}\n"
+     string += "dynamic eq: #{@dyneq}\n"
+     #string += "main zone: #{@main_zone}\n"
+     #string += "record source: #{record_source}\n"
     end
   end
 end ; end
