@@ -18,10 +18,29 @@ OptionParser.new do |opts|
     options.host = h
   end
 end.parse!
-  p options
-  p ARGV
+#  p options
+#  p ARGV
 
 denon = Net::Denon::start(options.host, :wait_time => 0.5)
+
+helpstring = <<-eos
+COMMANDS:
+   on
+   off
+   mute
+   unmute
+   query
+   status
+   volume up|down|N
+   dyneq on|off
+   source SOURCE
+   dynvolume heavy|medium|light|off
+   multieq MULTIEQ
+eos
+
+puts "Denon Receiver Interface for AVR-E300"
+puts "Try \"help\" for help."
+puts
 
 loop do
   cmd = readline("denon> ", true)
@@ -62,8 +81,11 @@ loop do
   when /mult(i)*e(q)*\s+([a-z_]+)/
     eq = cmd.match(/.*\s+([a-z_]+)/)[1].to_sym
     denon.multeq(eq)
+  when /help/
+    puts helpstring
   else
     puts "Invalid command #{cmd}"
+    puts helpstring
   end
 end
 
