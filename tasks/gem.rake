@@ -1,6 +1,6 @@
 # $Id$
 
-require 'rake/gempackagetask'
+require 'rubygems/package_task'
 
 namespace :gem do
 
